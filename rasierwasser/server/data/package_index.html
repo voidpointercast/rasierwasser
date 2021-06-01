@@ -1,0 +1,12 @@
+<html lang="en">
+<header>
+    <title>{{package}}</title>
+</header>
+<body>
+    <h1>Links for {{package}}</h1>
+    {% for file in files %}
+    <a href="/packages/{{package}}/{{file}}">{{file}}</a><br/>
+    {% endfor %}
+
+</body>
+</html>
