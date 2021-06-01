@@ -13,6 +13,8 @@ SQLAlchemy = "^1.4.17"
 pyOpenSSL = "^20.0.1"
 fastapi = "^0.65.1"
 Jinja2 = "^3.0.1"
+PyYAML = "^5.4.1"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 uvicorn = "^0.14.0"
