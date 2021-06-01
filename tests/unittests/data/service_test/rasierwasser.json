@@ -1,0 +1,12 @@
+{
+  "server":{
+    "hostname": "localhost",
+    "port": 10010
+  },
+  "storage": {
+    "backend": "database",
+    "parameter": {
+      "database": "sqlite:////tmp/rasierwasser.sqlite"
+    }
+  }
+}
