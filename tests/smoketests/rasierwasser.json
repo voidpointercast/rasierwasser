@@ -1,0 +1,20 @@
+{
+  "server":{
+    "hostname": "localhost",
+    "port": 10010
+  },
+  "storage": {
+    "backend": "database",
+    "parameter": {
+      "db_url": "sqlite:////tmp/rasierwasser.sqlite"
+    }
+  },
+  "auth": {
+    "policy": "http_basic",
+    "parameter": {
+      "username": "alice",
+      "salt": "3z0WCA1n6ZNtwsz9k7zewg==",
+      "password_hash": "2ad25d18ed2c96ea25ebcbff5656ce231e3558d1c0127f092a0d7fb24f5ac6f2"
+    }
+  }
+}
