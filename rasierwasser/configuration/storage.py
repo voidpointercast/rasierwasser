@@ -10,7 +10,7 @@ class StorageBackend(BaseModel):
 
 
 class DatabaseBackend(BaseModel):
-    database: str
+    db_url: str
     verify: bool = True
     options: Dict[str, str] = Field(default_factory=dict)
 
