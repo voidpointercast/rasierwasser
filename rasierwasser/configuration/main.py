@@ -5,13 +5,13 @@ from json import load as json_load
 from yaml import load as yaml_load
 from toml import load as toml_load
 from rasierwasser.configuration.storage import StorageBackend
-from rasierwasser.configuration.server import ServerConfig
-
+from rasierwasser.configuration.server import ServerConfig, AuthConfig, DEFAULT_AUTH_CONFIG
 
 
 class RasierwasserConfig(BaseModel):
     server: ServerConfig
     storage: StorageBackend
+    auth: AuthConfig = DEFAULT_AUTH_CONFIG
 
 
 _EXTENSION_MAP: Dict[str, Callable[[TextIO], Dict[str, Any]]] = dict(
