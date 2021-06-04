@@ -1,4 +1,4 @@
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Dict, Any
 from functools import partial
 from sqlalchemy import create_engine
 from sqlalchemy.exc import NoResultFound
@@ -87,7 +87,7 @@ def add_certificate(create_session: sessionmaker, certificate: CertificateData) 
         session.commit()
 
 
-def create_database_storage(db_url: str, verify: bool = True, **options) -> Storage:
+def create_database_storage(db_url: str, verify: bool = True, options: Optional[Dict[str, Any]] = None) -> Storage:
     """
     Args:
         db_url:
@@ -97,7 +97,7 @@ def create_database_storage(db_url: str, verify: bool = True, **options) -> Stor
     Returns:
     >>> create_database_storage('sqlite:///test.sqlite')
     """
-    engine: Engine = create_engine(db_url, **options)
+    engine: Engine = create_engine(db_url, **(options if options else dict()))
     Base.metadata.create_all(engine, checkfirst=True)
     create_session: sessionmaker = sessionmaker(engine)
 
