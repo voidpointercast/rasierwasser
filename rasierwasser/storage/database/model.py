@@ -1,4 +1,5 @@
-from sqlalchemy import Column, BLOB, TEXT, ForeignKey
+from sqlalchemy import Column, BLOB, TEXT, ForeignKey, DATETIME
+from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from rasierwasser.storage.algebra import PackageData, CertificateData
 
@@ -10,9 +11,10 @@ class Certificate(Base):
 
     name = Column(TEXT, primary_key=True)
     public_key = Column(BLOB)
+    upload_time = Column(DATETIME, default=datetime.utcnow)
 
     def as_certificate_data(self) -> CertificateData:
-        return CertificateData(name=self.name, public_key=self.public_key)
+        return CertificateData(name=self.name, public_key=self.public_key, upload_time=self.upload_time)
 
 
 class PackageFile(Base):
@@ -24,6 +26,7 @@ class PackageFile(Base):
     signature = Column(BLOB)
     certificate = Column(TEXT, ForeignKey('certificates.name'))
     digest = Column(TEXT)
+    upload_time = Column(DATETIME, default=datetime.utcnow)
 
     def as_package_data(self) -> PackageData:
         return PackageData(
@@ -31,7 +34,8 @@ class PackageFile(Base):
             file_name=self.file,
             file_content=self.content,
             signature=self.signature,
-            certificate=self.certificate
+            certificate=self.certificate,
+            upload_time=self.upload_time
         )
 
 
