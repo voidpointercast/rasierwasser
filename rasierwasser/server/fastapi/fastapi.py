@@ -1,10 +1,12 @@
 from typing import List
 from jinja2 import Template
 from pkg_resources import resource_string
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from starlette.responses import Response, HTMLResponse
 from rasierwasser.storage.algebra import PackageData, CertificateData, Storage, PackageName, FileName
+from rasierwasser.configuration.server import AuthConfig, DEFAULT_AUTH_CONFIG
+from rasierwasser.server.fastapi.auth import parse_auth_config, AuthPolicy
 
 
 class CertificateUpload(BaseModel):
@@ -21,9 +23,14 @@ class FileUpload(BaseModel):
     hash_algorithm: str = 'sha512'
 
 
-def create_fastapi_server(storage: Storage, debug: bool = False) -> FastAPI:
+def create_fastapi_server(
+        storage: Storage,
+        debug: bool = False,
+        auth_config: AuthConfig = DEFAULT_AUTH_CONFIG
+) -> FastAPI:
 
     app: FastAPI = FastAPI(debug=debug)
+    auth: AuthPolicy = parse_auth_config(auth_config)
 
     @app.get('/packages')
     def base_index() -> HTMLResponse:
@@ -66,9 +73,17 @@ def create_fastapi_server(storage: Storage, debug: bool = False) -> FastAPI:
         )
 
     @app.post('/certificates', status_code=201)
-    async def upload_certificate(certificate: CertificateUpload):
+    async def upload_certificate(
+            certificate: CertificateUpload,
+            credentials: auth.credential_type = Depends(auth.security)
+    ):
+        try:
+            auth.check_credentials(credentials)
+        except PermissionError:
+            raise HTTPException(403)
         storage.add_certificate(CertificateData.from_base64(certificate.name, certificate.public_key_base64))
 
     return app
+
 
 
