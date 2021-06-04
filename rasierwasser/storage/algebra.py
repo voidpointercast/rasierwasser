@@ -1,7 +1,8 @@
 from typing import Callable, Iterable, Dict
+from datetime import datetime
 from hashlib import sha512
 from base64 import b64decode, b64encode
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 PackageName: type = str
 FileName: type = str
@@ -14,13 +15,15 @@ class CertificateData(BaseModel):
     """
     name: str
     public_key: bytes
+    upload_time: datetime = Field(default_factory=datetime.now)
 
     @property
     def canonic(self) -> Dict[str, str]:
         return dict(
             name=self.name,
             sha512=sha512(self.public_key).hexdigest(),
-            public_key_base64=b64encode(self.public_key)
+            public_key_base64=b64encode(self.public_key),
+            upload_time=self.upload_time.isoformat()
         )
 
     @classmethod
@@ -35,6 +38,7 @@ class PackageData(BaseModel):
     signature: bytes
     certificate: str
     digest: str = 'sha512'
+    upload_time: datetime = Field(default_factory=datetime.now)
 
     def canonical(self) -> Dict[str, str]:
         print(self)
@@ -46,7 +50,8 @@ class PackageData(BaseModel):
             signature_base64=b64encode(self.signature).decode(errors='replace'),
             signature_sha512=sha512(self.signature).hexdigest(),
             certificate=self.certificate,
-            digest=self.digest
+            digest=self.digest,
+            upload_time=self.upload_time.isoformat()
         )
 
     @classmethod
