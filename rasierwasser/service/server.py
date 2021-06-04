@@ -17,7 +17,7 @@ def create_rasierwasser_instance(config: RasierwasserConfig) -> RasierwasserInst
     storage: Storage = create_storage_from_config(config.storage)
     return RasierwasserInstance(
         storage=storage,
-        application=default_server(storage, config.server.debug),
+        application=default_server(storage, config.server.debug, config.auth),
         config=config
     )
 
