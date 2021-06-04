@@ -1,5 +1,5 @@
 from typing import TypeVar
-from rasierwasser.server.fastapi import create_fastapi_server
+from rasierwasser.server.fastapi.fastapi import create_fastapi_server
 from rasierwasser.storage.algebra import Storage
 from rasierwasser.configuration.main import AuthConfig, DEFAULT_AUTH_CONFIG
 
