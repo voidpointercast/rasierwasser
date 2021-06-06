@@ -1,10 +1,11 @@
 from typing import Optional, Iterable, Dict, Any
+from datetime import datetime
 from functools import partial
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.engine import Engine
-from rasierwasser.storage.algebra import Storage, PackageData, FileName, PackageName, CertificateData
+from rasierwasser.storage.algebra import Storage, PackageData, FileName, PackageName, CertificateData, PackageActivity
 from rasierwasser.storage.database.model import Certificate, PackageFile, Base
 from rasierwasser.storage.validation import verify_package_data
 
@@ -87,6 +88,18 @@ def add_certificate(create_session: sessionmaker, certificate: CertificateData) 
         session.commit()
 
 
+def get_package_activities(create_session: sessionmaker, begin: datetime, end: datetime) -> Iterable[PackageActivity]:
+    with SessionGuard(create_session) as session:
+        return sorted(
+            map(
+                lambda r: PackageActivity.from_package_data(PackageFile.as_package_data(r)),
+                session.query(PackageFile).filter(and_(PackageFile.upload_time >= begin, PackageFile.upload_time < end))
+            ),
+            key=lambda a: a.upload_time,
+            reverse=True
+        )
+
+
 def create_database_storage(db_url: str, verify: bool = True, options: Optional[Dict[str, Any]] = None) -> Storage:
     """
     Args:
@@ -108,6 +121,7 @@ def create_database_storage(db_url: str, verify: bool = True, options: Optional[
         packages=partial(packages, create_session),
         add_certificate=partial(add_certificate, create_session),
         certificates=partial(certificates, create_session),
-        verify=verify
+        verify=verify,
+        package_activities=partial(get_package_activities, create_session)
     )
 
