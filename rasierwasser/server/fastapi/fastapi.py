@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 from jinja2 import Template
 from pkg_resources import resource_string
 from fastapi import FastAPI, Depends, HTTPException
@@ -64,6 +65,31 @@ def create_fastapi_server(
                 upload.certificate, upload.hash_algorithm
             )
         )
+
+    @app.get('/activities/packages')
+    async def activities(begin: Optional[datetime] = None, end: Optional[datetime] = None):
+        begin = begin if begin else datetime.min
+        end = end if end else datetime.max
+        return storage.package_activities(begin, end)
+
+    @app.get('/activities/certificates')
+    async def certificate_activities(begin: Optional[datetime] = None, end: Optional[datetime] = None):
+        begin = begin if begin else datetime.min
+        end = end if end else datetime.max
+        return sorted(
+            (
+                dict(**certificate.canonic, last_activity=last_activity)
+                for certificate in storage.certificates()
+                if begin <= (
+                    last_activity := max(
+                        filter(None, (certificate.upload_time, certificate.disabled, certificate.compromised))
+                    )
+                ) < end
+            ),
+            key=lambda c: c['last_activity'],
+            reverse=True
+        )
+
 
     @app.get('/certificates')
     async def get_certificates():
