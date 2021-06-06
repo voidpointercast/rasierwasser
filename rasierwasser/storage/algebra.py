@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Dict
+from typing import Callable, Iterable, Dict, Optional
 from datetime import datetime
 from hashlib import sha512
 from base64 import b64decode, b64encode
@@ -16,6 +16,8 @@ class CertificateData(BaseModel):
     name: str
     public_key: bytes
     upload_time: datetime = Field(default_factory=datetime.now)
+    disabled: Optional[datetime] = Field(default=None)
+    compromised: Optional[datetime] = Field(default=None)
 
     @property
     def canonic(self) -> Dict[str, str]:
@@ -23,7 +25,9 @@ class CertificateData(BaseModel):
             name=self.name,
             sha512=sha512(self.public_key).hexdigest(),
             public_key_base64=b64encode(self.public_key),
-            upload_time=self.upload_time.isoformat()
+            upload_time=self.upload_time.isoformat(),
+            disabled=self.disabled.isoformat() if self.disabled else self.disabled,
+            compromised=self.compromised.isoformat() if self.compromised else self.compromised
         )
 
     @classmethod
