@@ -74,10 +74,25 @@ class PackageData(BaseModel):
         )
 
 
+class PackageActivity(BaseModel):
+    package: PackageName
+    file: FileName
+    upload_time: datetime
+    certificate: str
+
+    @classmethod
+    def from_package_data(cls, package: PackageData) -> 'PackageActivity':
+        return PackageActivity(
+            package=package.package_name, file=package.file_name,
+            upload_time=package.upload_time, certificate=package.certificate
+        )
+
+
 StorePackage = Callable[[PackageData], None]
 RetrievePackage = Callable[[PackageName, FileName], PackageData]
 GetPackageIndex = Callable[[PackageName], Iterable[PackageData]]
 GetPackages = Callable[[], Iterable[str]]
+GetPackageActivities = Callable[[datetime, datetime], Iterable[PackageActivity]]
 GetCertificates = Callable[[], Iterable[CertificateData]]
 StoreCertificate = Callable[[CertificateData], None]
 
@@ -89,5 +104,6 @@ class Storage(BaseModel):
     packages: GetPackages
     add_certificate: StoreCertificate
     certificates: GetCertificates
+    package_activities: GetPackageActivities
     hash_algorithm: str = 'sha512'
     verify: bool = True
