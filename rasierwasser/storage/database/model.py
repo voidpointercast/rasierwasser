@@ -12,9 +12,17 @@ class Certificate(Base):
     name = Column(TEXT, primary_key=True)
     public_key = Column(BLOB)
     upload_time = Column(DATETIME, default=datetime.utcnow)
+    disabled = Column(DATETIME, default=None, nullable=True)
+    compromised = Column(DATETIME, default=None, nullable=True)
 
     def as_certificate_data(self) -> CertificateData:
-        return CertificateData(name=self.name, public_key=self.public_key, upload_time=self.upload_time)
+        return CertificateData(
+            name=self.name,
+            public_key=self.public_key,
+            upload_time=self.upload_time,
+            disabled=self.disabled,
+            compromised=self.compromised
+        )
 
 
 class PackageFile(Base):
