@@ -33,12 +33,17 @@ echo -n "Installing rasierwasser..."
 python -m pip install rasierwasser -f "$BASE_DIR/dist" &> "$LOG"
 result $?
 
+
 echo -n "Starting rasierwasser..."
 /tmp/rasierwasser.env/bin/rasierwasser --config "$SCRIPT_DIR/rasierwasser.json"& &> "$LOG"
 result $?
 
 echo "Starting test phase in 10 seconds"
 sleep 10
+
+echo -n "Signing latest rasierwasser wheel"
+/tmp/rasierwasser.env/bin/rasierwasser_sign --package-dir "$BASE_DIR" --keyfile-override ./data/key.pem --password TEST --out-dir /tmp/rasierwasser.env &> "$LOG"
+result $?
 
 echo -n "Uploading certificate..."
 curl -X POST --user alice:bob http://localhost:10010/certificates -d "@$SCRIPT_DIR/data/certificate_upload.json" &> "$LOG"
@@ -51,6 +56,10 @@ result $?
 echo -n "Trying to download uploaded file..."
 sleep 2
 curl http://localhost:10010/packages/sample/sample_upload_file.txt &> "$LOG"
+result $?
+
+echo -n "Uploading latest rasierwasser wheel..."
+curl -X POST http://localhost:10010/packages -d "@/tmp/rasierwasser.env/rasierwasser_signature.json" &> "$LOG"
 result $?
 
 read -n 1 -p "Hit any key to continue:"
