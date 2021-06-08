@@ -46,9 +46,15 @@ def find_latest_package(package: Path) -> str:
 def main():
     parser: ArgumentParser = ArgumentParser(description='Sign and newest release for a python package')
     parser.add_argument('--package-dir', default='.', help='Path to python project.')
+    parser.add_argument('--keyfile-override', default=None, help='Overrides keyfile in configuration file.')
+    parser.add_argument('--password', default=None, help='Password for keyfile.')
+    parser.add_argument('--out-dir', default=None, help='Alternative output dir for signature result.')
 
     args = parser.parse_args()
     config: Dict[str, Any] = decent_until_config_found(Path(args.package_dir))
+    if args.keyfile_override:
+        config['keyfile'] = args.keyfile_override
+
     digest: str = config.get('digest', 'sha512')
     target_wheel: str = find_latest_package(Path(config['package_dir']))
     with open(target_wheel, 'rb') as src:
@@ -57,12 +63,13 @@ def main():
     with open(config['keyfile'], 'rb') as src:
         private_key: PKey = load_privatekey(
             FILETYPE_PEM, src.read(),
-            getpass('Private key password: ').encode()
+            (args.password if args.password else getpass('Private key password: ')).encode()
         )
 
-    package: str = target_wheel.rsplit('-', 1)[0]
+    package: str = Path(target_wheel).name.rsplit('-', 4)[0]
     signature: str = b64encode(sign(private_key, content, digest)).decode('ascii')
-    with Path(config['package_dir']).joinpath('rasierwasser_signature.json').open('w', encoding='utf-8') as out:
+    output_path: Path = Path(args.out_dir) if args.out_dir else Path(config['package_dir'])
+    with output_path.joinpath('rasierwasser_signature.json').open('w', encoding='utf-8') as out:
         dump(
             dict(
                 package=package,
