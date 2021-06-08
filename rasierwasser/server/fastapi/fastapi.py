@@ -59,12 +59,15 @@ def create_fastapi_server(
 
     @app.post('/packages', status_code=201)
     async def upload_file(upload: FileUpload):
-        storage.store(
-            PackageData.from_base64(
-                upload.package, upload.filename, upload.content_base64, upload.signature_base64,
-                upload.certificate, upload.hash_algorithm
+        try:
+            storage.store(
+                PackageData.from_base64(
+                    upload.package, upload.filename, upload.content_base64, upload.signature_base64,
+                    upload.certificate, upload.hash_algorithm
+                )
             )
-        )
+        except PermissionError:
+            raise HTTPException(403)
 
     @app.get('/activities/packages')
     async def activities(begin: Optional[datetime] = None, end: Optional[datetime] = None):
