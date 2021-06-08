@@ -1,0 +1,8 @@
+{
+  "package": "sample",
+    "filename": "sample_upload_file.txt",
+    "content_base64": "SEVMTE8gV09STEQh",
+    "certificate": "base",
+    "signature_base64": "WxLeyAnLx2OOO7/9dUriW29Gx6hw05+g5RmUy+2qRi04MxYfLgx04vmWVpX+24b0Av5khcnus7ohHRa1xeK+7EIxI3sH+ZMSF0+Fl0INKm8ebiYW2qfStCbl/lLC4tIrWy+drXVZKeh9VWJjW/optLcPvyBtMLKHa1WpC9ncTQKa2XmeQu1H3o6qEF6cyXE+DpLLLC39EXhtO01z8J2M1xZ2cIvO29JBg8cS28n8A3TbOSZE21cQA6gRWQ8zLizY4pZL+VrLqXyy7vEYg0OZU7IqUtgqkkeH2WX2P0ahVYTI6hnz+2XenH+Zh0F0Uvj64iyiMiRryYXqCYW91dZOFmNZmCPW1JjKEgDdu2qJ3v4edg+M/djIQaEy94do140b1Y/j1bTVtsn8eMfVmq7+TFu2a/hdQrA69YX64ZC84dE4xYafhNPn4GKna4wzSiZQBWQGUCV0uWy+v4WabDNCStQgrx8mqMe34ct3sDiP3Q19QxRibmoiZrMp5rrYqVahBSVUhvygk+Njk6tdk6MpOnM7d3zSQcmP2k1TC8S4Y1ivaB/J6S4P+DcIsnS631UhiFF1kIvOgMxvnetZNY+ouqwVMS0F4f8GU401VyAAEjBqN0OGt8CAhmcfvgSFxvo47Er/WFrPKGn6LKTZxy3iioCSnTXDQEZBxcvFaZ/6HHU=",
+    "hash_algorithm": "sha512"
+}
