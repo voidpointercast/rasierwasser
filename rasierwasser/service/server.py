@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from os import getpid
 from pydantic import BaseModel
 from uvicorn import run
 from rasierwasser.server import WSGIServer
@@ -32,5 +33,8 @@ def main():
     parser: ArgumentParser = ArgumentParser(description='Start Rasierwasser service')
     parser.add_argument('--config', default='/etc/rasierwasser/rasierwasser.yml', help='Config file location.')
     parser.add_argument('--encoding', default='utf-8', help='Config file encoding.')
+    parser.add_argument('--pidfile', default='rasierwasser.pid', help='File to store current pid in.')
     args = parser.parse_args()
+    with open(args.pidfile, 'w') as out:
+        out.write(str(getpid()))
     start_service(args.config, args.encoding)
