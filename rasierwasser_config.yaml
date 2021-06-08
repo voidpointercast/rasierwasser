@@ -1,0 +1,3 @@
+certificate: base
+keyfile: ./tests/smoketests/key.pem
+digest: sha512
