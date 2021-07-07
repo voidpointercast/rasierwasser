@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rasierwasser"
-version = "0.1.12"
+version = "0.1.13"
 description = "Simple pip repository server for internal usage"
 authors = ["voidpointercast <patrick.daniel.gress@gmail.com>"]
 license = "GPLv3"
