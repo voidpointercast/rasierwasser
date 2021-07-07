@@ -68,6 +68,8 @@ def create_fastapi_server(
             )
         except PermissionError:
             raise HTTPException(403)
+        except ValueError as error:
+            raise HTTPException(422, str(error))
 
     @app.get('/activities/packages')
     async def activities(begin: Optional[datetime] = None, end: Optional[datetime] = None):
