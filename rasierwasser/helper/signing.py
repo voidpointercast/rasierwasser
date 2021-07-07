@@ -73,7 +73,7 @@ def main():
     with open(config['keyfile'], 'rb') as src:
         private_key: PKey = load_privatekey(
             FILETYPE_PEM, src.read(),
-            (args.password if args.password else getpass('Private key password: ')).encode()
+            (args.password if args.password is not None else getpass('Private key password: ')).encode()
         )
 
     package: str = Path(target_wheel).name.rsplit('-', 4)[0]
