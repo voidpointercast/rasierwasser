@@ -7,7 +7,7 @@ license = "GPLv3"
 repository = "https://github.com/voidpointercast/rasierwasser"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.8"
 Flask = "^2.0.1"
 pydantic = "^1.8.2"
 SQLAlchemy = "^1.4.17"
