@@ -6,6 +6,7 @@ from getpass import getpass
 from base64 import b64encode
 from OpenSSL.crypto import PKey, load_privatekey, FILETYPE_PEM, sign
 from requests import post
+from rasierwasser.storage.validation import get_normalised_package_content
 
 
 def main():
@@ -27,7 +28,7 @@ def main():
         private_key: PKey = load_privatekey(FILETYPE_PEM, src.read(), getpass('Private key password: ').encode())
 
     filename: str = split(args.file)[-1]
-    signature: str = b64encode(sign(private_key, content, args.digest)).decode('ascii')
+    signature: str = b64encode(sign(private_key, get_normalised_package_content(content), args.digest)).decode('ascii')
     with post(
         f'http://{args.host}:{args.port}/packages',
         json=dict(

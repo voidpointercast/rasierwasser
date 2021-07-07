@@ -11,6 +11,7 @@ from os import scandir, DirEntry
 from getpass import getpass
 from base64 import b64encode
 from OpenSSL.crypto import PKey, load_privatekey, FILETYPE_PEM, sign
+from rasierwasser.storage.validation import get_normalised_package_content
 
 
 CONFIG_FILE_NAME: str = 'rasierwasser_config.yaml'
@@ -18,17 +19,26 @@ PACKAGE_PATTERN: Pattern = compile_regex(r'.*-(?P<major>\d+)\.(?P<minor>\d+)\.(?
 
 
 def decent_until_config_found(current: Path) -> Dict[str, Any]:
-    target: Path = current.joinpath(CONFIG_FILE_NAME)
-    if target.exists():
-        with target.open('r', encoding='utf-8') as src:
-            return dict(
-                **safe_load(src),
-                config_file=target.absolute().as_uri(),
-                package_dir=str(target.parent.absolute())
-            )
-    next_decent: Path = current.parent
-    if next_decent == current:
-        raise FileNotFoundError(f'Could not find configuration file {CONFIG_FILE_NAME} in directory structure.')
+    while True:
+        current = current.absolute()
+        target: Path = current.joinpath(CONFIG_FILE_NAME)
+        if target.exists():
+            print("Found configuration file here:", str(target))
+            with target.open('r', encoding='utf-8') as src:
+                config = dict(
+                    **safe_load(src),
+                    config_file=target.absolute().as_uri(),
+                    package_dir=str(target.parent.absolute())
+                )
+                keyfile: Path = Path(config['keyfile'])
+                if not keyfile.is_absolute():
+                    config['keyfile'] = Path(current).joinpath(keyfile)
+                return config
+        next_decent: Path = current.parent
+        if next_decent == current:
+            raise FileNotFoundError(f'Could not find configuration file {CONFIG_FILE_NAME} in directory structure.')
+        else:
+            current = next_decent
 
 
 def find_latest_package(package: Path) -> str:
@@ -67,7 +77,7 @@ def main():
         )
 
     package: str = Path(target_wheel).name.rsplit('-', 4)[0]
-    signature: str = b64encode(sign(private_key, content, digest)).decode('ascii')
+    signature: str = b64encode(sign(private_key, get_normalised_package_content(content), digest)).decode('ascii')
     output_path: Path = Path(args.out_dir) if args.out_dir else Path(config['package_dir'])
     with output_path.joinpath('rasierwasser_signature.json').open('w', encoding='utf-8') as out:
         dump(
